@@ -42,11 +42,14 @@ var missileSpeed = 6.5;
 var missileRotateRate = 0.06;
 var hp;
 var hpDecreaseRate;
-var time = 0;
+var time;
+var stime;
 var gases;
 var initCount = 0;
 var isTurbo;
-
+var score;
+var missilePeriod;
+var missileAddPeriod;
 
 
 function init(){
@@ -54,11 +57,14 @@ function init(){
 	restartButton.style.display = "none";
 	gameOverLabel.style.display = "none";
 	scoreLabel.style.display = "none";
+	score = 0;
 	addListeners();
 	initClouds();
 	initFlight();
 	initMissile();
 	initGas();
+	time = 0;
+	stime = 0;
 	timer = setInterval(onTimerTick, 1000/30);
 
 }
@@ -83,6 +89,8 @@ function initFlight(){
 
 function initMissile() {
 	missiles = [];
+	missilePeriod = 3000;
+	missileAddPeriod = 100;
 	var i;
 	// for(i = 0; i < missilesCount; ++i){
 	missiles.push(new Missile(missileImage, missileSpeed, missileRotateRate, missileSignImage, theCanvasWidth,theCanvasHeight));
@@ -193,6 +201,12 @@ function drawGases() {
 	}
 }
 
+function writeScore(){
+	context.font = "30px Comic Sans MS";
+	context.fillStyle = "black";
+	context.textAlign = "left";
+	context.fillText(score,-theCanvasWidth/2.2,-theCanvasHeight/2.3);
+}
 
 function onTimerTick(){
 	hp -= hpDecreaseRate;
@@ -201,14 +215,25 @@ function onTimerTick(){
 	drawMissiles();
 	drawGases();
 	drawFlight();
+	writeScore();
 	if(isTurbo){
 		hp -= hpDecreaseRate*7;
 	}
 	if(hp <= 0){ speed = 0;}
 	time += 1000/30;
-	if(time > 3000){
-		time -= 3000;
+	if(time >= missilePeriod){
+		time -= missilePeriod;
 		missiles.push(new Missile(missileImage, missileSpeed, missileRotateRate, missileSignImage, theCanvasWidth,theCanvasHeight));
+		if(missilePeriod>1000){
+			missilePeriod -= missileAddPeriod;
+		}
+	}
+	if(hp > 0){
+		stime += 1000/30;
+		if(stime >= 100){
+			stime-=100;
+			score+=1;
+		}
 	}
 }
 
