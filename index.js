@@ -39,12 +39,13 @@ var cloudsCount = 8;
 var missiles;
 var missilesCount = 10;
 var missileSpeed = 6.5;
-var missileRotateRate = 0.07;
+var missileRotateRate = 0.06;
 var hp;
 var hpDecreaseRate;
 var time = 0;
 var gases;
 var initCount = 0;
+var isTurbo;
 
 
 
@@ -76,7 +77,8 @@ function initFlight(){
 	targetY = 1;
 	speed = 5;
 	hp = 100;
-	hpDecreaseRate = 0.2;
+	hpDecreaseRate = 0.1;
+	isTurbo = false;
 }
 
 function initMissile() {
@@ -109,6 +111,8 @@ function inputDownListener(touchX, touchY){
 
 	// console.log(Math.atan2(touchX, touchY)/Math.PI);
 	myFlight.printSomething();
+	speed *= 1.5;
+	isTurbo = true;
 }
 
 function inputMoveListener(touchX, touchY){
@@ -121,6 +125,8 @@ function inputMoveListener(touchX, touchY){
 function inputUpListener(touchX, touchY){
 	touchX-= theCanvasWidth/2;
 	touchY-= theCanvasHeight/2;
+	speed /= 1.5;
+	isTurbo = false;
 }
 
 
@@ -182,7 +188,7 @@ function drawGases() {
 		if(gases[i].hit(0,0)){
 			// console.log("eat");
 			gases[i] = new Gas(gasImage, gasSignImage, theCanvasWidth, theCanvasHeight);
-			hp+=20;
+			hp=Math.min(100, hp+20);
 		}
 	}
 }
@@ -195,6 +201,9 @@ function onTimerTick(){
 	drawMissiles();
 	drawGases();
 	drawFlight();
+	if(isTurbo){
+		hp -= hpDecreaseRate*7;
+	}
 	if(hp <= 0){ speed = 0;}
 	time += 1000/30;
 	if(time > 3000){
