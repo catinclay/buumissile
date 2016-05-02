@@ -44,6 +44,7 @@ var hp;
 var hpDecreaseRate;
 var time = 0;
 var gases;
+var initCount = 0;
 
 
 
@@ -179,6 +180,7 @@ function drawGases() {
 		gases[i].move(speed, myFlight.getDegree());
 		gases[i].drawToContext(context);
 		if(gases[i].hit(0,0)){
+			// console.log("eat");
 			gases[i] = new Gas(gasImage, gasSignImage, theCanvasWidth, theCanvasHeight);
 			hp+=20;
 		}
@@ -268,6 +270,29 @@ missileSignImage.src = "shapes/img/missile-sign.png";
 flightImage.src = "shapes/img/flightIcon.png";
 gasImage.src = "shapes/img/gasIcon.png";
 gasSignImage.src = "shapes/img/gasIcon-sign.png";
+missileImage.onload = function() {
+	initCount++;
+	checkInit();
+}
+missileSignImage.onload = function() {
+	initCount++;
+	checkInit();
+}
 flightImage.onload = function() {
-	init();
+	initCount++;
+	checkInit();
+}
+gasImage.onload = function() {
+	initCount++;
+	checkInit();
+}
+gasSignImage.onload = function() {
+	initCount++;
+	checkInit();
+}
+
+function checkInit(){
+	if(initCount == 5){
+		init();
+	}
 }
