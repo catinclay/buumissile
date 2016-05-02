@@ -34,6 +34,8 @@ var myFlight;
 var targetX;
 var targetY;
 var speed;
+var defaultSpeed;
+var turboSpeed;
 var clouds;
 var cloudsCount = 8;
 var missiles;
@@ -81,7 +83,9 @@ function initFlight(){
 	myFlight = new Flight(0,0,flightImage);
 	targetX = 0;
 	targetY = 1;
-	speed = 5;
+	defaultSpeed = 5;
+	turboSpeed = 7.5;
+	speed = defaultSpeed;
 	hp = 100;
 	hpDecreaseRate = 0.1;
 	isTurbo = false;
@@ -119,7 +123,7 @@ function inputDownListener(touchX, touchY){
 
 	// console.log(Math.atan2(touchX, touchY)/Math.PI);
 	myFlight.printSomething();
-	speed *= 1.5;
+	speed = turboSpeed;
 	isTurbo = true;
 }
 
@@ -133,7 +137,7 @@ function inputMoveListener(touchX, touchY){
 function inputUpListener(touchX, touchY){
 	touchX-= theCanvasWidth/2;
 	touchY-= theCanvasHeight/2;
-	speed /= 1.5;
+	speed = defaultSpeed;
 	isTurbo = false;
 }
 
@@ -219,16 +223,17 @@ function onTimerTick(){
 	if(isTurbo){
 		hp -= hpDecreaseRate*7;
 	}
-	if(hp <= 0){ speed = 0;}
-	time += 1000/30;
-	if(time >= missilePeriod){
-		time -= missilePeriod;
-		missiles.push(new Missile(missileImage, missileSpeed, missileRotateRate, missileSignImage, theCanvasWidth,theCanvasHeight));
-		if(missilePeriod>1000){
-			missilePeriod -= missileAddPeriod;
+	if(hp <= 0){ 
+		speed = 0;
+	}else{
+		time += 1000/30;
+		if(time >= missilePeriod){
+			time -= missilePeriod;
+			missiles.push(new Missile(missileImage, missileSpeed, missileRotateRate, missileSignImage, theCanvasWidth,theCanvasHeight));
+			if(missilePeriod>1000){
+				missilePeriod -= missileAddPeriod;
+			}
 		}
-	}
-	if(hp > 0){
 		stime += 1000/30;
 		if(stime >= 100){
 			stime-=100;
