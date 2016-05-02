@@ -1,8 +1,8 @@
 var theCanvas = document.getElementById("mainCanvas");
-if(screen.width < 400){
-	theCanvas.width *=2;
-	theCanvas.height *=2;
-}
+// if(screen.width < 400){
+// 	theCanvas.width *=2;
+// 	theCanvas.height *=2;
+// }
 var theCanvasHeight = theCanvas.height; 
 var theCanvasWidth = theCanvas.width;
 var gameOverLabel = document.getElementById("gameOverLabel");
