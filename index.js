@@ -124,7 +124,7 @@ function inputDownListener(touchX, touchY){
 	// console.log(Math.atan2(touchX, touchY)/Math.PI);
 	myFlight.printSomething();
 	speed = turboSpeed;
-	isTurbo = true;
+	// isTurbo = true;
 }
 
 function inputMoveListener(touchX, touchY){
@@ -138,7 +138,7 @@ function inputUpListener(touchX, touchY){
 	touchX-= theCanvasWidth/2;
 	touchY-= theCanvasHeight/2;
 	speed = defaultSpeed;
-	isTurbo = false;
+	// isTurbo = false;
 }
 
 
