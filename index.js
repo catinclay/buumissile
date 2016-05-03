@@ -270,7 +270,7 @@ function addListeners(canvas, handler){
 		var bRect = canvas.getBoundingClientRect();
 		var touches = evt.changedTouches;
 		var touchX = (touches[0].pageX - bRect.left)*(canvas.width/bRect.width);
-		var = (touches[0].pageY - bRect.top)*(canvas.height/bRect.height);
+		var touchY = (touches[0].pageY - bRect.top)*(canvas.height/bRect.height);
 		handler.inputDown(touchX, touchY);
 	}
 
