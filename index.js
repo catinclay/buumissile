@@ -12,14 +12,16 @@ var context = theCanvas.getContext("2d");
 context.translate(theCanvasWidth/2,theCanvasHeight/2);
 
 var failedSound = new Audio('sounds/faildSound.mp3');
-var comboSounds = [new Audio('sounds/combo1.mp3'),
-					new Audio('sounds/combo2.mp3'),
-					new Audio('sounds/combo3.mp3'),
-					new Audio('sounds/combo4.mp3'),
-					new Audio('sounds/combo5.mp3'),
-					new Audio('sounds/combo6.mp3'),
-					new Audio('sounds/combo7.mp3'),
-					new Audio('sounds/combo8.mp3')];
+var comboSounds = [
+	new Audio('sounds/combo1.mp3'),
+	new Audio('sounds/combo2.mp3'),
+	new Audio('sounds/combo3.mp3'),
+	new Audio('sounds/combo4.mp3'),
+	new Audio('sounds/combo5.mp3'),
+	new Audio('sounds/combo6.mp3'),
+	new Audio('sounds/combo7.mp3'),
+	new Audio('sounds/combo8.mp3')
+];
 failedSound.volume = .2;
 for(se in comboSounds){
 	se.volume = 1;
@@ -60,7 +62,11 @@ function init(){
 	gameOverLabel.style.display = "none";
 	scoreLabel.style.display = "none";
 	score = 0;
-	addListeners();
+	addListeners(theCanvas, {
+		inputUp: inputUpListener,
+		inputDown: inputDownListener,
+		inputMove: inputMoveListener
+	});
 	initClouds();
 	initFlight();
 	initMissile();
@@ -242,96 +248,82 @@ function onTimerTick(){
 	}
 }
 
+// HACK: Consider reconstuct this to class.
+function addListeners(canvas, handler){
+	canvas.addEventListener('mousedown', _mouseDownListener, false);
+	canvas.addEventListener('touchstart', _touchDownListener, false);
+	window.addEventListener('mousemove', _mouseMoveListener, false);
+	window.addEventListener('touchmove', _touchMoveListener, false);
+	window.addEventListener('mouseup', _mouseUpListener, false);
+	window.addEventListener('touchend', _touchUpListener, false);
 
-function addListeners(){
-	theCanvas.addEventListener('mousedown', mouseDownListener, false);
-	theCanvas.addEventListener('touchstart', touchDownListener, false);
-	window.addEventListener('mousemove', mouseMoveListener, false);
-	window.addEventListener('touchmove', touchMoveListener, false);
-	window.addEventListener('mouseup', mouseUpListener, false);
-	window.addEventListener('touchend', touchUpListener, false);
-}
+	function _mouseDownListener(evt){
+		var bRect = canvas.getBoundingClientRect();
+		var touchX = (evt.clientX - bRect.left)*(canvas.width/bRect.width);
+		var touchY = (evt.clientY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputDown(touchX, touchY);
+	}
 
+	function _touchDownListener(evt){
+		evt.preventDefault();
+		evt.stopPropagation();
+		var bRect = canvas.getBoundingClientRect();
+		var touches = evt.changedTouches;
+		var touchX = (touches[0].pageX - bRect.left)*(canvas.width/bRect.width);
+		var = (touches[0].pageY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputDown(touchX, touchY);
+	}
 
+	function _mouseMoveListener(evt){
+		var bRect = canvas.getBoundingClientRect();
+		var touchX = (evt.clientX - bRect.left)*(canvas.width/bRect.width);
+		var touchY = (evt.clientY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputMove(touchX, touchY);
+	}
 
-function mouseDownListener(evt){
-	var bRect = theCanvas.getBoundingClientRect();
-	touchX = (evt.clientX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (evt.clientY - bRect.top)*(theCanvas.height/bRect.height);
-	inputDownListener(touchX, touchY);
-}
+	function _touchMoveListener(evt){
+		evt.preventDefault();	evt.stopPropagation();
+		var bRect = canvas.getBoundingClientRect();
+		var touches = evt.changedTouches;
+		var touchX = (touches[0].pageX - bRect.left)*(canvas.width/bRect.width);
+		var touchY = (touches[0].pageY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputMove(touchX, touchY);
+	}
 
-function touchDownListener(evt){
-	evt.preventDefault();	evt.stopPropagation();
-	var bRect = theCanvas.getBoundingClientRect();
-	var touches = evt.changedTouches;
-	touchX = (touches[0].pageX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (touches[0].pageY - bRect.top)*(theCanvas.height/bRect.height);
-	inputDownListener(touchX, touchY);
-}
+	function _mouseUpListener(evt){
+		var bRect = canvas.getBoundingClientRect();
+		var touchX = (evt.clientX - bRect.left)*(canvas.width/bRect.width);
+		var touchY = (evt.clientY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputUp(touchX, touchY);
+	}
 
-function mouseMoveListener(evt){
-	var bRect = theCanvas.getBoundingClientRect();
-	touchX = (evt.clientX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (evt.clientY - bRect.top)*(theCanvas.height/bRect.height);
-	inputMoveListener(touchX, touchY);
-}
-
-function touchMoveListener(evt){
-	evt.preventDefault();	evt.stopPropagation();
-	var bRect = theCanvas.getBoundingClientRect();
-	var touches = evt.changedTouches;
-	touchX = (touches[0].pageX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (touches[0].pageY - bRect.top)*(theCanvas.height/bRect.height);
-	inputMoveListener(touchX, touchY);
-}
-
-function mouseUpListener(evt){
-	var bRect = theCanvas.getBoundingClientRect();
-	touchX = (evt.clientX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (evt.clientY - bRect.top)*(theCanvas.height/bRect.height);
-	inputUpListener(touchX, touchY);
-}
-
-function touchUpListener(evt){
-	evt.preventDefault();	evt.stopPropagation();
-	var bRect = theCanvas.getBoundingClientRect();
-	var touches = evt.changedTouches;
-	touchX = (touches[0].pageX - bRect.left)*(theCanvas.width/bRect.width);
-	touchY = (touches[0].pageY - bRect.top)*(theCanvas.height/bRect.height);
-	inputUpListener(touchX, touchY);
-}
-
-
-
-missileImage.src = "shapes/img/missileIcon.png";
-missileSignImage.src = "shapes/img/missile-sign.png";
-flightImage.src = "shapes/img/flightIcon.png";
-gasImage.src = "shapes/img/gasIcon.png";
-gasSignImage.src = "shapes/img/gasIcon-sign.png";
-missileImage.onload = function() {
-	initCount++;
-	checkInit();
-}
-missileSignImage.onload = function() {
-	initCount++;
-	checkInit();
-}
-flightImage.onload = function() {
-	initCount++;
-	checkInit();
-}
-gasImage.onload = function() {
-	initCount++;
-	checkInit();
-}
-gasSignImage.onload = function() {
-	initCount++;
-	checkInit();
-}
-
-function checkInit(){
-	if(initCount == 5){
-		init();
+	function _touchUpListener(evt){
+		evt.preventDefault();	evt.stopPropagation();
+		var bRect = canvas.getBoundingClientRect();
+		var touches = evt.changedTouches;
+		var touchX = (touches[0].pageX - bRect.left)*(canvas.width/bRect.width);
+		var touchY = (touches[0].pageY - bRect.top)*(canvas.height/bRect.height);
+		handler.inputUp(touchX, touchY);
 	}
 }
+
+
+
+
+
+function loadImage(image, src) {
+	image.src = src;
+	return new Promise(function(resolve, reject){
+		image.onload = resolve;
+		image.onerror = reject;
+	});
+}
+
+var loadPromises = [
+	loadImage(missileImage, "shapes/img/missileIcon.png"),
+	loadImage(missileSignImage, "shapes/img/missile-sign.png"),
+	loadImage(flightImage, "shapes/img/flightIcon.png"),
+	loadImage(gasImage, "shapes/img/gasIcon.png"),
+	loadImage(gasSignImage, "shapes/img/gasIcon-sign.png")
+];
+Promise.all(loadPromises).then(init);
