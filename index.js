@@ -187,12 +187,13 @@ function inputDownListener(touchX, touchY){
 	if(touchY > theCanvasHeight/3.5){
 		// console.log("googo");
 		if(!isGamePlaying && !isGameOver){
-			// isGamePlaying = true;
+			isGamePlaying = true;
 			// console.log("googo!!!");
 			Promise.all(loadPromises).then(initGame);
 		}
 	}
 	if(isGameOver){
+		console.log("??");
 		init();
 	}
 }
