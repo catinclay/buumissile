@@ -56,6 +56,7 @@ var missilePeriod;
 var missileAddPeriod;
 var isGamePlaying;
 var isGameOver;
+var lastLeadScore = 9999999;
 
 
 
@@ -76,11 +77,13 @@ function init(){
 		scArray.sort(function(a, b){
 			return b.score - a.score;
 		});
+		var lastLeadIndex = Math.min(9, scArray.length-1);
+		lastLeadScore = scArray[lastLeadIndex].score;
 		var top = -theCanvasHeight/3;
 		var left = -theCanvasHeight/4;
 		var offset = theCanvasHeight/15;
-		console.log(scArray);;
-		for(var i = 0; i <Math.min(scArray.length, 8); i++ ){
+		// console.log(scArray);
+		for(var i = 0; i <Math.min(scArray.length, 10); i++ ){
 			context.font = "25px Comic Sans MS";
 			context.fillStyle = "black";
 			context.textAlign = "left";
@@ -154,16 +157,19 @@ function gameOver(){
 	speed = 0;
 	isGameOver = true;
 	isGamePlaying = false;
-	var userName = prompt("Awesome! What's your name?", "Guest");
 
 	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
-		var index = snapshot.val().length;
-		var updateRef = g_myFirebaseRef.child("Scores/"+index);
-		var json = {
-			name : userName,
-			score : score,
+		var index = snapshot.val().length;	
+		if(score > lastLeadScore){
+			var userName = prompt("Awesome! What's your name?", "Guest");
+		
+			var updateRef = g_myFirebaseRef.child("Scores/"+index);
+			var json = {
+				name : userName,
+				score : score,
+			}
+			updateRef.update(json);
 		}
-		updateRef.update(json);
 	});
 
 	// theCanvas.style.display = "none";
@@ -179,10 +185,10 @@ function inputDownListener(touchX, touchY){
 	touchX-= theCanvasWidth/2;
 	touchY-= theCanvasHeight/2;
 	if(touchY > theCanvasHeight/3.5){
-		console.log("googo");
+		// console.log("googo");
 		if(!isGamePlaying && !isGameOver){
 			// isGamePlaying = true;
-			console.log("googo!!!");
+			// console.log("googo!!!");
 			Promise.all(loadPromises).then(initGame);
 		}
 	}
