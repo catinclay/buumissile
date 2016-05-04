@@ -61,6 +61,13 @@ var lastLeadScore = 9999999;
 
 
 function init(){
+
+	// var userName = prompt("Awesome! What's your name?", "Guest");
+	// if(userName!=undefined){
+	// 	console.log("e");
+	// }else{
+	// 	console.log("not e");
+	// }
 	clearInterval(timer);
 	timer = undefined;
 	isGamePlaying = false;
@@ -159,10 +166,10 @@ function gameOver(){
 	isGamePlaying = false;
 
 	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
-		var index = snapshot.val().length;	
+		// var index = snapshot.val().length;	
 		if(score > lastLeadScore){
 			var userName = prompt("Awesome! What's your name?", "Guest");
-			if(userName!==undefined){
+			if(userName!=undefined){
 				var updateRef = g_myFirebaseRef.child("Scores/"+index);
 				var json = {
 					name : userName,
