@@ -10,7 +10,7 @@ var restartButton = document.getElementById("restartButton");
 var scoreLabel = document.getElementById("scoreLabel");
 var context = theCanvas.getContext("2d");
 context.translate(theCanvasWidth/2,theCanvasHeight/2);
-
+var g_myFirebaseRef = new Firebase("https://fiery-inferno-8152.firebaseio.com/");
 var failedSound = new Audio('sounds/faildSound.mp3');
 var comboSounds = [
 	new Audio('sounds/combo1.mp3'),
@@ -41,11 +41,11 @@ var turboSpeed;
 var clouds;
 var cloudsCount = 8;
 var missiles;
-var missilesCount = 10;
 var missileSpeed = 6.5;
 var missileRotateRate = 0.06;
 var hp;
 var hpDecreaseRate;
+var timer;
 var time;
 var stime;
 var gases;
@@ -54,26 +54,66 @@ var isTurbo;
 var score;
 var missilePeriod;
 var missileAddPeriod;
+var isGamePlaying;
+var isGameOver;
+
 
 
 function init(){
+	clearInterval(timer);
+	timer = undefined;
+	isGamePlaying = false;
+	isGameOver = false;
 	theCanvas.style.display = "block";
-	restartButton.style.display = "none";
-	gameOverLabel.style.display = "none";
-	scoreLabel.style.display = "none";
-	score = 0;
+	drawScreen();
 	addListeners(theCanvas, {
 		inputUp: inputUpListener,
 		inputDown: inputDownListener,
 		inputMove: inputMoveListener
 	});
+	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
+		var scArray = snapshot.val();
+		scArray.sort(function(a, b){
+			return b.score - a.score;
+		});
+		var top = -theCanvasHeight/3;
+		var left = -theCanvasHeight/4;
+		var offset = theCanvasHeight/15;
+		console.log(scArray);;
+		for(var i = 0; i <Math.min(scArray.length, 8); i++ ){
+			context.font = "25px Comic Sans MS";
+			context.fillStyle = "black";
+			context.textAlign = "left";
+			var sc = scArray[i].score;
+			var nm = scArray[i].name;
+			context.fillText(sc,left, top);
+			context.fillText(nm,left+2*offset, top);
+			top += offset;
+		}
+		context.font = "40px Comic Sans MS";
+		context.fillStyle = "red";
+		context.textAlign = "center";
+		context.fillText("Start", 0 , theCanvasHeight/3);
+	});
+}
+
+
+function initGame(){
+	restartButton.style.display = "none";
+	gameOverLabel.style.display = "none";
+	scoreLabel.style.display = "none";
+	score = 0;
 	initClouds();
 	initFlight();
 	initMissile();
 	initGas();
 	time = 0;
 	stime = 0;
-	timer = setInterval(onTimerTick, 1000/30);
+	gamePlaying = true;
+	isGameOver =false;
+	if(!timer){
+		timer = setInterval(onTimerTick, 1000/30);
+	}
 
 }
 
@@ -102,9 +142,7 @@ function initMissile() {
 	missilePeriod = 3000;
 	missileAddPeriod = 100;
 	var i;
-	// for(i = 0; i < missilesCount; ++i){
 	missiles.push(new Missile(missileImage, missileSpeed, missileRotateRate, missileSignImage, theCanvasWidth,theCanvasHeight));
-	// }
 }
 
 function initGas(){
@@ -113,24 +151,44 @@ function initGas(){
 }
 
 function gameOver(){
-	// speed = 0;
-	theCanvas.style.display = "none";
-	gameOverLabel.style.display = "block";
-	restartButton.style.display = "block";
-	scoreLabel.innerHTML = index;
-	scoreLabel.style.display = "block";
-	clearInterval(timer);
+	speed = 0;
+	isGameOver = true;
+	isGamePlaying = false;
+	var userName = prompt("Awesome! What's your name?", "Guest");
+
+	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
+		var index = snapshot.val().length;
+		var updateRef = g_myFirebaseRef.child("Scores/"+index);
+		var json = {
+			name : userName,
+			score : score,
+		}
+		updateRef.update(json);
+	});
+
+	// theCanvas.style.display = "none";
+	// gameOverLabel.style.display = "block";
+	// restartButton.style.display = "block";
+	// scoreLabel.innerHTML = index;
+	// scoreLabel.style.display = "block";
+	// clearInterval(timer);
 }
 
 
 function inputDownListener(touchX, touchY){
 	touchX-= theCanvasWidth/2;
 	touchY-= theCanvasHeight/2;
-
-	// console.log(Math.atan2(touchX, touchY)/Math.PI);
-	myFlight.printSomething();
-	// speed = turboSpeed;
-	// isTurbo = true;
+	if(touchY > theCanvasHeight/3.5){
+		console.log("googo");
+		if(!isGamePlaying && !isGameOver){
+			// isGamePlaying = true;
+			console.log("googo!!!");
+			Promise.all(loadPromises).then(initGame);
+		}
+	}
+	if(isGameOver){
+		init();
+	}
 }
 
 function inputMoveListener(touchX, touchY){
@@ -218,6 +276,15 @@ function writeScore(){
 	context.fillText(score,-theCanvasWidth/2.2,-theCanvasHeight/2.3);
 }
 
+function writeGameOver(){
+	context.font = "40px Comic Sans MS";
+	context.fillStyle = "red";
+	context.textAlign = "center";
+	context.fillText("Game Over", 0 , 0);
+	context.font = "20px Comic Sans MS";
+	context.fillText("press to try again", 0 , theCanvasHeight/4);
+}
+
 function onTimerTick(){
 	hp -= hpDecreaseRate;
 	drawScreen();
@@ -230,7 +297,10 @@ function onTimerTick(){
 		hp -= hpDecreaseRate*7;
 	}
 	if(hp <= 0){ 
-		speed = 0;
+		if(!isGameOver){
+			gameOver();
+		}
+		writeGameOver();
 	}else{
 		time += 1000/30;
 		if(time >= missilePeriod){
@@ -326,4 +396,7 @@ var loadPromises = [
 	loadImage(gasImage, "shapes/img/gasIcon.png"),
 	loadImage(gasSignImage, "shapes/img/gasIcon-sign.png")
 ];
-Promise.all(loadPromises).then(init);
+
+// 
+
+init();
