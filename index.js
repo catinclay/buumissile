@@ -167,7 +167,7 @@ function gameOver(){
 
 	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
 		var index = snapshot.val().length;	
-		// if(score > lastLeadScore){
+		if(score > lastLeadScore){
 			var userName = prompt("Awesome! What's your name?", "Guest");
 			if(userName!=undefined){
 				var updateRef = g_myFirebaseRef.child("Scores/"+index);
@@ -177,7 +177,7 @@ function gameOver(){
 				}
 				updateRef.update(json);
 			}
-		// }
+		}
 	});
 
 	// theCanvas.style.display = "none";
