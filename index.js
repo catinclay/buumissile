@@ -162,13 +162,14 @@ function gameOver(){
 		var index = snapshot.val().length;	
 		if(score > lastLeadScore){
 			var userName = prompt("Awesome! What's your name?", "Guest");
-		
-			var updateRef = g_myFirebaseRef.child("Scores/"+index);
-			var json = {
-				name : userName,
-				score : score,
+			if(userName!==undefined){
+				var updateRef = g_myFirebaseRef.child("Scores/"+index);
+				var json = {
+					name : userName,
+					score : score,
+				}
+				updateRef.update(json);
 			}
-			updateRef.update(json);
 		}
 	});
 
