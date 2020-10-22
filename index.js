@@ -169,20 +169,20 @@ function gameOver(){
 	isGameOver = true;
 	isGamePlaying = false;
 
-	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
-		var index = snapshot.val().length;	
-		// if(score > lastLeadScore){
-			var userName = prompt("Awesome! What's your name?", "Guest");
-			if(userName!=undefined){
-				var updateRef = g_myFirebaseRef.child("Scores/"+index);
-				var json = {
-					name : userName,
-					score : score,
-				}
-				updateRef.update(json);
-			}
-		// }
-	});
+	// g_myFirebaseRef.child("Scores").once("value",function(snapshot){
+	// 	var index = snapshot.val().length;	
+	// 	// if(score > lastLeadScore){
+	// 		var userName = prompt("Awesome! What's your name?", "Guest");
+	// 		if(userName!=undefined){
+	// 			var updateRef = g_myFirebaseRef.child("Scores/"+index);
+	// 			var json = {
+	// 				name : userName,
+	// 				score : score,
+	// 			}
+	// 			updateRef.update(json);
+	// 		}
+	// 	// }
+	// });
 
 	// theCanvas.style.display = "none";
 	// gameOverLabel.style.display = "block";
