@@ -79,32 +79,36 @@ function init(){
 		inputDown: inputDownListener,
 		inputMove: inputMoveListener
 	});
-	g_myFirebaseRef.child("Scores").once("value",function(snapshot){
-		var scArray = snapshot.val();
-		scArray.sort(function(a, b){
-			return b.score - a.score;
-		});
-		var lastLeadIndex = Math.min(9, scArray.length-1);
-		lastLeadScore = scArray[lastLeadIndex].score;
-		var top = -theCanvasHeight/3;
-		var left = -theCanvasHeight/4;
-		var offset = theCanvasHeight/15;
-		// console.log(scArray);
-		for(var i = 0; i <Math.min(scArray.length, 10); i++ ){
-			context.font = "25px Comic Sans MS";
-			context.fillStyle = "black";
-			context.textAlign = "left";
-			var sc = scArray[i].score;
-			var nm = scArray[i].name;
-			context.fillText(sc,left, top);
-			context.fillText(nm,left+2*offset, top);
-			top += offset;
-		}
-		context.font = "40px Comic Sans MS";
-		context.fillStyle = "red";
-		context.textAlign = "center";
-		context.fillText("Start", 0 , theCanvasHeight/3);
-	});
+	// g_myFirebaseRef.child("Scores").once("value",function(snapshot){
+	// 	var scArray = snapshot.val();
+	// 	scArray.sort(function(a, b){
+	// 		return b.score - a.score;
+	// 	});
+	// 	var lastLeadIndex = Math.min(9, scArray.length-1);
+	// 	lastLeadScore = scArray[lastLeadIndex].score;
+	// 	var top = -theCanvasHeight/3;
+	// 	var left = -theCanvasHeight/4;
+	// 	var offset = theCanvasHeight/15;
+	// 	// console.log(scArray);
+	// 	for(var i = 0; i <Math.min(scArray.length, 10); i++ ){
+	// 		context.font = "25px Comic Sans MS";
+	// 		context.fillStyle = "black";
+	// 		context.textAlign = "left";
+	// 		var sc = scArray[i].score;
+	// 		var nm = scArray[i].name;
+	// 		context.fillText(sc,left, top);
+	// 		context.fillText(nm,left+2*offset, top);
+	// 		top += offset;
+	// 	}
+	// 	context.font = "40px Comic Sans MS";
+	// 	context.fillStyle = "red";
+	// 	context.textAlign = "center";
+	// 	context.fillText("Start", 0 , theCanvasHeight/3);
+	// });
+	context.font = "40px Comic Sans MS";
+	context.fillStyle = "red";
+	context.textAlign = "center";
+	context.fillText("Start", 0 , theCanvasHeight/3);
 }
 
 
